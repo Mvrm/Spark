@@ -1,0 +1,71 @@
+Spark:2009 as a research project in the UC Berkeley RAD Lab, later to become the AMPLab.
+
+SC : Spark Context
+REPL: Read Eval Print Loop
+YARN: $ spark-shell --master yarn-client
+Local: $ spark-shell --master local[*]
+RDD: Resilent Distribted Database
+data wrangling: transform data into formats that can be analyzed for insights
+
+map is the easiest, it essentially says do the given operation on every element of the sequence and return the resulting sequence (very similar to foreach
+
+flatMap is the same thing but instead of returning just one element per element you are allowed to return a sequence (which can be empty).
+
+reduceByKey takes an aggregate function (meaning it takes two arguments of the same type and returns that type, should also be commutative and associative otherwise you will get inconsistent results) which is used to aggregate every V for each K in your sequence of (K,V) pairs.
+
+Lambda:  one-line mini-functions on the fly, i.e g = lambda x: x*2 same as def f(x): ... return x*2
+encapsulate non-reusable code without littering your code with one-line functions
+
+-- take(n) action to return the first n elements of the RDD.
+-- first() action returns the first element of an RDD, and is equivalent to take(1)
+-- takeOrdered() action returns the first n elements of the RDD, using either their natural order or a custom comparator. The key advantage of using takeOrdered() instead of first() or take() is that takeOrdered() returns a deterministic result, while the other two actions may return differing results, depending on the number of partions or execution environment. takeOrdered() returns the list sorted in ascending order. The top() action is similar to takeOrdered() except that it returns the list in descending order.
+-- reduce() action reduces the elements of a RDD to a single value by applying a function that takes two parameters and returns a single value.
+-- takeSample() action returns an array with a random sample of elements from the dataset.
+
+
+
+val rdd2 = sc.textFile("hdfs:///some/path.txt")
+create a new variable in Scala, we must preface the name of the variable with either val or var.
+val are immutable, and may not be changed to refer to another value once they are assigned.
+var may be changed to refer to different objects of the same type
+
+val head = rawblocks.take(10)
+rdd.count()
+rdd.collect() = collect action returns an Array with all the objects from the RDD
+rdd.saveAsTextFile("hdfs:///user/ds/mynumbers")
+head.foreach(println)  = read the contents of an array, we can use the foreach method in conjunction with println to print each value in the array out on its own line
+
+course example:
+
+(1a) Parallelize, filter, and reduce 
+# Check that Spark is working
+largeRange = sc.parallelize(xrange(100000))
+reduceTest = largeRange.reduce(lambda a, b: a + b)
+filterReduceTest = largeRange.filter(lambda x: x % 7 == 0).sum()
+
+print reduceTest
+print filterReduceTest
+
+# If the Spark jobs don't work properly these will raise an AssertionError
+assert reduceTest == 4999950000
+assert filterReduceTest == 714264285
+
+------------------------------------------------------------
+(1b) Loading a text file 
+
+# Check loading data with sc.textFile
+import os.path
+baseDir = os.path.join('data')
+inputPath = os.path.join('cs100', 'lab1', 'shakespeare.txt')
+fileName = os.path.join(baseDir, inputPath)
+
+rawData = sc.textFile(fileName)
+shakespeareCount = rawData.count()
+
+print shakespeareCount
+
+# If the text file didn't load properly an AssertionError will be raised
+assert shakespeareCount == 122395
+
+------------------------------------------------------------
+
