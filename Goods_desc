@@ -1,0 +1,69 @@
+# Spark-Goods Description
+import org.apache.spark.SparkContext
+import org.apache.spark.SparkConf
+import org.apache.spark.mllib.classification.{NaiveBayes, NaiveBayesModel}
+import org.apache.spark.mllib.linalg.Vectors
+import org.apache.spark.mllib.regression.LabeledPoint
+import org.apache.spark.mllib.util.MLUtils
+import org.apache.spark.mllib.evaluation.MulticlassMetrics
+import org.apache.spark.mllib.feature.HashingTF
+
+val rawData = sc.textFile("/data/manish_test/goods/nice_goods2.csv")
+
+val rawData1 = rawData.map(x => x.replaceAll(",","")) 
+
+val rawData2 = rawData1.replaceAll("""\b\p{IsLetter}{1,2}\b""")
+
+val htf = new HashingTF(1000)
+
+val parsedData = rawData1.map { line =>
+val values = (line.split("|").toSeq)
+val featureVector = htf.transform(values(1).split(" "))
+val label = values(0).toDouble
+LabeledPoint(label, featureVector)
+}
+
+//parsedData.foreach(println)
+
+val splits = parsedData.randomSplit(Array(0.8, 0.2), seed = 11L)
+val training = splits(0)
+val test = splits(1)
+
+val model = NaiveBayes.train(training, lambda = 2.0, modelType = "multinomial")
+
+
+val predictionAndLabels = test.map { point => 
+  val score = model.predict(point.features)
+  (score, point.label)
+}
+    
+
+val metrics = new MulticlassMetrics(predictionAndLabels)
+    
+
+metrics.labels.foreach( l => println(metrics.fMeasure(l)))
+	
+val trainErr = predictionAndLabels.filter(r => r._1 != r._2).count.toDouble / training.count
+println("Training Error = " + trainErr)	
+
+
+
+val predictionAndLabel = test.map(p => (model.predict(p.features), p.label))
+val accuracy = 1.0 * predictionAndLabel.filter(x => x._1 == x._2).count() / test.count()
+
+
+val testData1 = htf.transform("mediation")
+val predictionAndLabels1 = model.predict(testData1)
+
+val testData1 = htf.transform("lost property return")
+val predictionAndLabels1 = model.predict(testData1)
+
+val testData1 = htf.transform("litigation services")
+val predictionAndLabels1 = model.predict(testData1)
+
+
+
+
+
+
+-------------------------------------
