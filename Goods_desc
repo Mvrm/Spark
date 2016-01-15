@@ -33,7 +33,6 @@ LabeledPoint(label, featureVector)
 (3.0,(1000,[49],[1.0]))
 (1.0,(1000,[48],[1.0]))
 (3.0,(1000,[49],[1.0]))
-
 (1.0,(1000,[48],[1.0]))
 
 val splits = parsedData.randomSplit(Array(0.8, 0.2), seed = 11L)
