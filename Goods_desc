@@ -61,9 +61,15 @@ val predictionAndLabels1 = model.predict(testData1)
 val testData1 = htf.transform("litigation services")
 val predictionAndLabels1 = model.predict(testData1)
 
-
-
-
-
-
 -------------------------------------
+1|combusting preparations [chemical additives to motor fuel]
+1|adhesives for industrial purposes
+1|
+1|salt for preserving, other than for foodstuffs
+1|auxiliary fluids for use with abrasives
+1|vulcanisation accelerators
+1|anti-frothing solutions for batteries
+1|anti-frothing solutions for accumulators
+1|acetates [chemicals]*
+1|acetate of cellulose, unprocessed
+
