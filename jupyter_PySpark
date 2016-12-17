@@ -74,5 +74,5 @@ jupyter --profile=pyspark
 
 --- launch ipython notebook to test pyspark ----
 
-jupyter notebook --profile=pyspark
+jupyter notebook
 
