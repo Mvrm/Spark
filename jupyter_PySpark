@@ -1,0 +1,87 @@
+steps to configure Jupyter Notebook for Pyspark:
+
+Spark: spark-2.0.2-bin-hadoop2.6
+Python:2.7
+jupyter:(1.0.0)
+jupyter-client:(4.4.0)
+jupyter-console:(5.0.0)
+ipython:(5.1.0)
+
+
+------- update spark-env.sh -------------
+
+export PYSPARK_DRIVER_PYTHON=/home/manish/anaconda/bin/jupyter
+export PYSPARK_DRIVER_PYTHON_OPTS="notebook --NotebookApp.open_browser=False --NotebookApp.ip='*' --NotebookApp.port=8880"
+export PYSPARK_PYTHON=/home/manish/anaconda/bin/python
+
+------ update.bashrc ------------
+
+# added by Anaconda  installer
+export PATH="/home/manish/anaconda/bin:$PATH"
+
+# PySpark Classes
+export PYTHONPATH="/home/manish/spark-2.0.2-bin-hadoop2.6/python/:$PYTHONPATH"
+
+# SPARK HOME
+#export SPARK_HOME="/home/manish/spark"
+export SPARK_HOME="/home/manish/spark-2.0.2-bin-hadoop2.6/"
+export PATH=$PATH:$:SPARK_HOME/bin
+
+# Python Path 
+export PYTHONPATH=$SPARK_HOME/python/:$PYTHONPATH
+export PYTHONPATH=$SPARK_HOME/python/lib/py4j-0.10.3-src.zip:$PYTHONPATH
+
+# Where you specify options you would normally add after bin/pyspark
+export PYSPARK_SUBMIT_ARGS="--master local[2] pyspark-shell"
+
+
+-------------- configure Jupyter Kernel -----------
+
+mkdir -p ~/.Jupyter/kernels/pyspark 
+
+vi ~/.Jupyter/kernels/pyspark kernel.json
+
+
+{
+    "display_name": "PySpark (Spark 2.0.2)",
+    "language": "python",
+    "argv": [
+        "/home/manish/anaconda/bin/python",
+        "-m",
+        "ipykernel",
+        "--profile=pyspark",
+        "-f",
+        "{connection_file}"
+    ],
+    "env": {
+        "CAPTURE_STANDARD_OUT": "true",
+        "CAPTURE_STANDARD_ERR": "true",
+        "SEND_EMPTY_OUTPUT": "false",
+        "SPARK_HOME": "/home/manish/spark-2.0.2-bin-hadoop2.6/"
+    }
+}
+
+--------------crate juypter profile for pyspark--------------------
+
+jupyter notebook --generate-config
+
+vi /home/manish/.jupyter/jupyter_notebook_config.py
+ 
+import os
+import sys
+spark_home = os.environ.get('SPARK_HOME', None)
+if not spark_home:
+    raise ValueError('SPARK_HOME environment variable is not set')
+sys.path.insert(0, os.path.join(spark_home, 'python'))
+sys.path.insert(0, os.path.join(spark_home, 'python/lib/py4j-0.10.1-src.zip'))
+exec(open(os.path.join(spark_home, 'python/pyspark/shell.py')).read())
+ 
+-------------launch to test the PySpark environment in jupyter----------
+--- launch ipython shell to test pyspark ----
+
+jupyter --profile=pyspark
+
+--- launch ipython notebook to test pyspark ----
+
+jupyter notebook --profile=pyspark
+
