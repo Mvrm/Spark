@@ -61,20 +61,11 @@ vi ~/.Jupyter/kernels/pyspark kernel.json
     }
 }
 
---------------crate juypter profile for pyspark--------------------
+--------------create juypter profile for pyspark--------------------
 
 jupyter notebook --generate-config
 
 vi /home/manish/.jupyter/jupyter_notebook_config.py
- 
-import os
-import sys
-spark_home = os.environ.get('SPARK_HOME', None)
-if not spark_home:
-    raise ValueError('SPARK_HOME environment variable is not set')
-sys.path.insert(0, os.path.join(spark_home, 'python'))
-sys.path.insert(0, os.path.join(spark_home, 'python/lib/py4j-0.10.1-src.zip'))
-exec(open(os.path.join(spark_home, 'python/pyspark/shell.py')).read())
  
 -------------launch to test the PySpark environment in jupyter----------
 --- launch ipython shell to test pyspark ----
